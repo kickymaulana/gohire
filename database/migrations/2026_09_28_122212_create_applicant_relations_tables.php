@@ -12,9 +12,9 @@ return new class extends Migration
         Schema::create('applicant_work_experiences', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
-            $table->string('company_name');
-            $table->string('last_position');
-            $table->string('duration'); // Contoh: 2 Tahun
+            $table->string('company_name')->nullable();
+            $table->string('last_position')->nullable();
+            $table->string('duration')->nullable(); // Contoh: 2 Tahun
             $table->decimal('last_salary', 12, 2)->nullable();
             $table->string('reason_for_moving')->nullable();
             $table->timestamps();
@@ -24,10 +24,10 @@ return new class extends Migration
         Schema::create('applicant_organizations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
-            $table->string('organization_name');
-            $table->string('position');
-            $table->string('year');
-            $table->string('city');
+            $table->string('organization_name')->nullable();
+            $table->string('position')->nullable();
+            $table->string('year')->nullable();
+            $table->string('city')->nullable();
             $table->string('achievement')->nullable();
             $table->timestamps();
         });
@@ -36,9 +36,9 @@ return new class extends Migration
         Schema::create('applicant_diseases', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
-            $table->string('disease_or_accident');
-            $table->string('treatment_year');
-            $table->string('duration');
+            $table->string('disease_or_accident')->nullable();
+            $table->string('treatment_year')->nullable();
+            $table->string('duration')->nullable();
             $table->string('lasting_impact')->nullable();
             $table->timestamps();
         });
@@ -47,10 +47,10 @@ return new class extends Migration
         Schema::create('applicant_references', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
-            $table->string('name');
-            $table->string('address_or_office');
-            $table->string('phone');
-            $table->string('relationship');
+            $table->string('name')->nullable();
+            $table->string('address_or_office')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('relationship')->nullable();
             $table->timestamps();
         });
 
@@ -58,9 +58,9 @@ return new class extends Migration
         Schema::create('applicant_internal_connections', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
-            $table->string('name');
-            $table->string('position_and_department');
-            $table->string('relationship');
+            $table->string('name')->nullable();
+            $table->string('position_and_department')->nullable();
+            $table->string('relationship')->nullable();
             $table->timestamps();
         });
 
@@ -68,10 +68,10 @@ return new class extends Migration
         Schema::create('applicant_psycho_tests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
-            $table->string('institution_name');
-            $table->string('year');
-            $table->string('city');
-            $table->string('purpose');
+            $table->string('institution_name')->nullable();
+            $table->string('year')->nullable();
+            $table->string('city')->nullable();
+            $table->string('purpose')->nullable();
             $table->timestamps();
         });
     }

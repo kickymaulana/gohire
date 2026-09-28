@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Applicants\Schemas;
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -38,14 +38,14 @@ class ApplicantForm
                         Repeater::make('workExperiences')
                             ->relationship()
                             ->schema([
-                                TextInput::make('company_name')->required()->label('Nama Perusahaan'),
-                                TextInput::make('last_position')->required()->label('Jabatan Terakhir'),
-                                TextInput::make('duration')->required()->label('Lama Bekerja'),
+                                TextInput::make('company_name')->label('Nama Perusahaan'),
+                                TextInput::make('last_position')->label('Jabatan Terakhir'),
+                                TextInput::make('duration')->label('Lama Bekerja'),
                                 TextInput::make('last_salary')->numeric()->label('Gaji Terakhir'),
                                 TextInput::make('reason_for_moving')->label('Alasan Pindah'),
                             ])
                             ->columns(2)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Pengalaman Organisasi')
@@ -53,14 +53,14 @@ class ApplicantForm
                         Repeater::make('organizations')
                             ->relationship()
                             ->schema([
-                                TextInput::make('organization_name')->required()->label('Nama Organisasi'),
-                                TextInput::make('position')->required()->label('Jabatan'),
-                                TextInput::make('year')->required()->label('Tahun'),
-                                TextInput::make('city')->required()->label('Kota'),
+                                TextInput::make('organization_name')->label('Nama Organisasi'),
+                                TextInput::make('position')->label('Jabatan'),
+                                TextInput::make('year')->label('Tahun'),
+                                TextInput::make('city')->label('Kota'),
                                 TextInput::make('achievement')->label('Prestasi/Keterangan'),
                             ])
                             ->columns(2)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Riwayat Penyakit / Kecelakaan Berat')
@@ -68,13 +68,13 @@ class ApplicantForm
                         Repeater::make('diseases')
                             ->relationship()
                             ->schema([
-                                TextInput::make('disease_or_accident')->required()->label('Jenis Penyakit/Kecelakaan'),
-                                TextInput::make('treatment_year')->required()->label('Tahun Perawatan'),
-                                TextInput::make('duration')->required()->label('Lamanya Sakit'),
+                                TextInput::make('disease_or_accident')->label('Jenis Penyakit/Kecelakaan'),
+                                TextInput::make('treatment_year')->label('Tahun Perawatan'),
+                                TextInput::make('duration')->label('Lamanya Sakit'),
                                 TextInput::make('lasting_impact')->label('Dampak/Kondisi Saat Ini'),
                             ])
                             ->columns(2)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Referensi (Orang yang Mengenal Anda)')
@@ -82,13 +82,13 @@ class ApplicantForm
                         Repeater::make('references')
                             ->relationship()
                             ->schema([
-                                TextInput::make('name')->required()->label('Nama Lengkap'),
-                                TextInput::make('address_or_office')->required()->label('Alamat / Kantor'),
-                                TextInput::make('phone')->required()->label('No. Telepon'),
-                                TextInput::make('relationship')->required()->label('Hubungan'),
+                                TextInput::make('name')->label('Nama Lengkap'),
+                                TextInput::make('address_or_office')->label('Alamat / Kantor'),
+                                TextInput::make('phone')->label('No. Telepon'),
+                                TextInput::make('relationship')->label('Hubungan'),
                             ])
                             ->columns(2)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Kenalan di Dalam Perusahaan Ini')
@@ -96,12 +96,12 @@ class ApplicantForm
                         Repeater::make('internalConnections')
                             ->relationship()
                             ->schema([
-                                TextInput::make('name')->required()->label('Nama Kenalan'),
-                                TextInput::make('position_and_department')->required()->label('Jabatan & Bagian'),
-                                TextInput::make('relationship')->required()->label('Hubungan'),
+                                TextInput::make('name')->label('Nama Kenalan'),
+                                TextInput::make('position_and_department')->label('Jabatan & Bagian'),
+                                TextInput::make('relationship')->label('Hubungan'),
                             ])
                             ->columns(2)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Riwayat Psikotes / Test Lainnya')
@@ -109,13 +109,13 @@ class ApplicantForm
                         Repeater::make('psychoTests')
                             ->relationship()
                             ->schema([
-                                TextInput::make('institution_name')->required()->label('Nama Lembaga/Instansi'),
-                                TextInput::make('year')->required()->label('Tahun'),
-                                TextInput::make('city')->required()->label('Kota'),
-                                TextInput::make('purpose')->required()->label('Keperluan/Tujuan'),
+                                TextInput::make('institution_name')->label('Nama Lembaga/Instansi'),
+                                TextInput::make('year')->label('Tahun'),
+                                TextInput::make('city')->label('Kota'),
+                                TextInput::make('purpose')->label('Keperluan/Tujuan'),
                             ])
                             ->columns(2)
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Pertanyaan & Essay Lainnya')
@@ -148,4 +148,3 @@ class ApplicantForm
             ]);
     }
 }
-
