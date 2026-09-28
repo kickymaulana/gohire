@@ -4,7 +4,7 @@ use App\Livewire\PublicRegistrationForm;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('register');
 });
 
 // Halaman pendaftaran pelamar untuk masyarakat umum
