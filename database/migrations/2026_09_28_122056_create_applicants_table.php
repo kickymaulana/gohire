@@ -14,8 +14,8 @@ return new class extends Migration
             // Informasi Pelamar & Posisi
             $table->string('full_name');
             $table->string('position_applied')->nullable();
-            $table->decimal('expected_salary', 12, 2)->nullable();
-            $table->decimal('estimated_living_cost', 12, 2)->nullable();
+            $table->decimal('expected_salary', 15, 2)->nullable();
+            $table->decimal('estimated_living_cost', 15, 2)->nullable();
             $table->date('available_start_date')->nullable();
 
             // Bagian Lain-lain (Essay)

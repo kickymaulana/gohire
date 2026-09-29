@@ -71,10 +71,16 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
                         TextInput::make('expected_salary')
                             ->numeric()
                             ->prefix('Rp')
+                            ->minValue(0)
+                            ->maxValue(1000000000)
+                            ->helperText('Maksimal Rp 1.000.000.000 (1 miliar).')
                             ->label('Gaji yang Diinginkan (opsional)'),
                         TextInput::make('estimated_living_cost')
                             ->numeric()
                             ->prefix('Rp')
+                            ->minValue(0)
+                            ->maxValue(1000000000)
+                            ->helperText('Maksimal Rp 1.000.000.000 (1 miliar).')
                             ->label('Perkiraan Biaya Hidup (opsional)'),
                         DatePicker::make('available_start_date')
                             ->label('Mulai Bekerja Tanggal (opsional)'),
@@ -342,6 +348,8 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
         $this->validate([
             'data.full_name' => ['required', 'string', 'max:255'],
             'data.position_applied' => ['required', 'string', 'max:255'],
+            'data.expected_salary' => ['nullable', 'numeric', 'min:0', 'max:1000000000'],
+            'data.estimated_living_cost' => ['nullable', 'numeric', 'min:0', 'max:1000000000'],
         ]);
 
         $data = $this->data;

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('company_name')->nullable();
             $table->string('last_position')->nullable();
             $table->string('duration')->nullable(); // Contoh: 2 Tahun
-            $table->decimal('last_salary', 12, 2)->nullable();
+            $table->decimal('last_salary', 15, 2)->nullable();
             $table->string('reason_for_moving')->nullable();
             $table->timestamps();
         });
