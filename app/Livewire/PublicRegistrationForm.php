@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Applicant;
+use Carbon\Carbon;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Checkbox;
@@ -84,20 +85,14 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
                                 'S3' => 'S3',
                             ])
                             ->native(false),
-                        DatePicker::make('birth_date')
-                            ->maxDate(now())
+                        TextInput::make('birth_date')
+                            ->placeholder('Contoh: 15/05/1998')
                             ->label('Tanggal Lahir (opsional)'),
                         TextInput::make('height_cm')
-                            ->numeric()
                             ->suffix('cm')
-                            ->minValue(0)
-                            ->maxValue(300)
                             ->label('Tinggi Badan (opsional)'),
                         TextInput::make('weight_kg')
-                            ->numeric()
                             ->suffix('kg')
-                            ->minValue(0)
-                            ->maxValue(500)
                             ->label('Berat Badan (opsional)'),
                         Textarea::make('address')
                             ->rows(2)
@@ -109,18 +104,12 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
                             ->maxLength(255)
                             ->label('Posisi yang Dilamar'),
                         TextInput::make('expected_salary')
-                            ->numeric()
                             ->prefix('Rp')
-                            ->minValue(0)
-                            ->maxValue(1000000000)
-                            ->helperText('Maksimal Rp 1.000.000.000 (1 miliar).')
+                            ->helperText('Contoh: 5.000.000 atau 5000000. Maksimal Rp 1.000.000.000.')
                             ->label('Gaji yang Diinginkan (opsional)'),
                         TextInput::make('estimated_living_cost')
-                            ->numeric()
                             ->prefix('Rp')
-                            ->minValue(0)
-                            ->maxValue(1000000000)
-                            ->helperText('Maksimal Rp 1.000.000.000 (1 miliar).')
+                            ->helperText('Contoh: 2.500.000 atau 2500000. Maksimal Rp 1.000.000.000.')
                             ->label('Perkiraan Biaya Hidup (opsional)'),
                         DatePicker::make('available_start_date')
                             ->label('Mulai Bekerja Tanggal (opsional)'),
@@ -138,7 +127,7 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
                                 TextInput::make('company_name')->label('Nama Perusahaan'),
                                 TextInput::make('last_position')->label('Jabatan Terakhir'),
                                 TextInput::make('duration')->label('Lama Bekerja'),
-                                TextInput::make('last_salary')->numeric()->label('Gaji Terakhir'),
+                                TextInput::make('last_salary')->label('Gaji Terakhir'),
                                 TextInput::make('reason_for_moving')->label('Alasan Pindah'),
                             ])
                             ->columns(2)
@@ -383,20 +372,140 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
         return true;
     }
 
+    /**
+     * Bersihkan input angka dari format ribuan Indonesia.
+     * Pelamar di lapangan sering mengetik "5.000.000", "70,5", atau "Rp 5.000.000".
+     */
+    private function normalizeNumeric(mixed $value): ?float
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+
+        $value = trim((string) $value);
+
+        // Format Indonesia: 1.234.567 atau 1.234.567,89 → 1234567 / 1234567.89
+        if (preg_match('/^-?\d{1,3}(\.\d{3})+(,\d+)?$/', $value)) {
+            return (float) str_replace(',', '.', str_replace('.', '', $value));
+        }
+
+        // Desimal berkoma: 70,5 → 70.5
+        if (preg_match('/^-?\d+,\d+$/', $value)) {
+            return (float) str_replace(',', '.', $value);
+        }
+
+        // Ribuan berkoma (format Inggris): 5,000,000 → 5000000
+        if (preg_match('/^-?\d{1,3}(,\d{3})+$/', $value)) {
+            return (float) str_replace(',', '', $value);
+        }
+
+        // Format desimal berkoma tunggal yang sebenarnya dimaksud sebagai desimal
+        // dalam konteks Indonesia (mis. "65.5" tidak terdeteksi sebagai ribuan).
+        if (preg_match('/^-?\d+\.\d+$/', $value)) {
+            return (float) $value;
+        }
+
+        // Usaha terakhir: ambil digit saja
+        $cleaned = preg_replace('/[^\d]/', '', $value);
+
+        if ($cleaned === '') {
+            return null;
+        }
+
+        $number = (float) $cleaned;
+
+        // Tolak nilai tak masuk akal (melebihi kapasitas kolom decimal(15,2))
+        return $number > 999999999999 ? null : $number;
+    }
+
+    /**
+     * Normalisasi tanggal agar formatnya selalu Y-m-d.
+     * Menangani format Indonesia: 15/05/1998 atau 15-05-1998.
+     */
+    private function normalizeDate(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $value = trim((string) $value);
+
+        // Format Indonesia: dd/mm/yyyy atau dd-mm-yyyy
+        if (preg_match('/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/', $value, $m)) {
+            $day = str_pad($m[1], 2, '0', STR_PAD_LEFT);
+            $month = str_pad($m[2], 2, '0', STR_PAD_LEFT);
+
+            return "{$m[3]}-{$month}-{$day}";
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public function submit(): void
     {
         $this->validate([
             'data.full_name' => ['required', 'string', 'max:255'],
             'data.position_applied' => ['required', 'string', 'max:255'],
-            'data.expected_salary' => ['nullable', 'numeric', 'min:0', 'max:1000000000'],
-            'data.estimated_living_cost' => ['nullable', 'numeric', 'min:0', 'max:1000000000'],
-            'data.height_cm' => ['nullable', 'numeric', 'min:0', 'max:300'],
-            'data.weight_kg' => ['nullable', 'numeric', 'min:0', 'max:500'],
-            'data.birth_date' => ['nullable', 'date', 'before:today'],
             'data.phone_whatsapp' => ['nullable', 'string', 'max:30'],
         ]);
 
         $data = $this->data;
+
+        // Normalisasi angka & tanggal sebelum disimpan ke database.
+        // Dilakukan sebelum validasi numeric karena input pelamar bisa berformat
+        // "5.000.000", "70,5", atau "Rp 2.500.000".
+        $data['expected_salary'] = $this->normalizeNumeric($data['expected_salary'] ?? null);
+        $data['estimated_living_cost'] = $this->normalizeNumeric($data['estimated_living_cost'] ?? null);
+        $data['height_cm'] = $this->normalizeNumeric($data['height_cm'] ?? null);
+        $data['weight_kg'] = $this->normalizeNumeric($data['weight_kg'] ?? null);
+        $data['birth_date'] = $this->normalizeDate($data['birth_date'] ?? null);
+        $data['available_start_date'] = $this->normalizeDate($data['available_start_date'] ?? null);
+
+        // Validasi batas nilai dilakukan SETELAH normalisasi.
+        // errorMessage global dipakai karena user berada di langkah 5 saat submit,
+        // sedangkan field yang error ada di langkah 1 (tidak terlihat).
+        if ($data['expected_salary'] !== null && $data['expected_salary'] > 1000000000) {
+            $this->addError('data.expected_salary', 'Gaji yang diinginkan maksimal Rp 1.000.000.000.');
+            $this->errorMessage = 'Gaji yang diinginkan maksimal Rp 1.000.000.000.';
+
+            return;
+        }
+
+        if ($data['estimated_living_cost'] !== null && $data['estimated_living_cost'] > 1000000000) {
+            $this->addError('data.estimated_living_cost', 'Perkiraan biaya hidup maksimal Rp 1.000.000.000.');
+            $this->errorMessage = 'Perkiraan biaya hidup maksimal Rp 1.000.000.000.';
+
+            return;
+        }
+
+        if ($data['height_cm'] !== null && ($data['height_cm'] < 0 || $data['height_cm'] > 300)) {
+            $this->addError('data.height_cm', 'Tinggi badan harus antara 0-300 cm.');
+            $this->errorMessage = 'Tinggi badan harus antara 0-300 cm.';
+
+            return;
+        }
+
+        if ($data['weight_kg'] !== null && ($data['weight_kg'] < 0 || $data['weight_kg'] > 500)) {
+            $this->addError('data.weight_kg', 'Berat badan harus antara 0-500 kg.');
+            $this->errorMessage = 'Berat badan harus antara 0-500 kg.';
+
+            return;
+        }
+
+        if ($data['birth_date'] && $data['birth_date'] > now()->format('Y-m-d')) {
+            $this->addError('data.birth_date', 'Tanggal lahir tidak boleh di masa depan.');
+            $this->errorMessage = 'Tanggal lahir tidak boleh di masa depan.';
+
+            return;
+        }
 
         DB::transaction(function () use ($data) {
             $applicant = Applicant::create([
@@ -434,6 +543,11 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
                 'psychoTests' => ['institution_name', 'year', 'city', 'purpose'],
             ];
 
+            // Kolom yang perlu dibersihkan format ribuannya per relasi
+            $numericFields = [
+                'workExperiences' => ['last_salary'],
+            ];
+
             foreach ($relations as $key => $fields) {
                 foreach ($data[$key] ?? [] as $row) {
                     // Lewati baris yang seluruh field-nya kosong
@@ -443,6 +557,12 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
                     );
 
                     if (! empty($record)) {
+                        foreach ($numericFields[$key] ?? [] as $numericField) {
+                            if (isset($record[$numericField])) {
+                                $record[$numericField] = $this->normalizeNumeric($record[$numericField]);
+                            }
+                        }
+
                         $applicant->{$key}()->create($record);
                     }
                 }
