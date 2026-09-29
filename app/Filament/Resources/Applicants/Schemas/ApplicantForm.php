@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Applicants\Schemas;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -21,13 +22,52 @@ class ApplicantForm
                         TextInput::make('full_name')
                             ->required()
                             ->label('Nama Lengkap'),
+                        TextInput::make('phone_whatsapp')
+                            ->tel()
+                            ->label('No HP / WhatsApp Aktif'),
+                        DatePicker::make('birth_date')
+                            ->label('Tanggal Lahir'),
+                        Select::make('education_level')
+                            ->label('Tamatan (Pendidikan Terakhir)')
+                            ->options([
+                                'SD' => 'SD',
+                                'SMP' => 'SMP / Sederajat',
+                                'SMA' => 'SMA / SMK / Sederajat',
+                                'D1' => 'D1',
+                                'D2' => 'D2',
+                                'D3' => 'D3',
+                                'D4' => 'D4',
+                                'S1' => 'S1',
+                                'S2' => 'S2',
+                                'S3' => 'S3',
+                            ]),
+                        TextInput::make('height_cm')
+                            ->numeric()
+                            ->suffix('cm')
+                            ->minValue(0)
+                            ->maxValue(300)
+                            ->label('Tinggi Badan'),
+                        TextInput::make('weight_kg')
+                            ->numeric()
+                            ->suffix('kg')
+                            ->minValue(0)
+                            ->maxValue(500)
+                            ->label('Berat Badan'),
+                        Textarea::make('address')
+                            ->rows(2)
+                            ->columnSpanFull()
+                            ->label('Alamat Lengkap'),
                         TextInput::make('position_applied')
                             ->label('Posisi yang Dilamar'),
                         TextInput::make('expected_salary')
                             ->numeric()
+                            ->minValue(0)
+                            ->maxValue(1000000000)
                             ->label('Gaji yang Diinginkan (Rp)'),
                         TextInput::make('estimated_living_cost')
                             ->numeric()
+                            ->minValue(0)
+                            ->maxValue(1000000000)
                             ->label('Perkiraan Biaya Hidup (Rp)'),
                         DatePicker::make('available_start_date')
                             ->label('Mulai Bekerja Tanggal'),

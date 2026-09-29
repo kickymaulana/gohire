@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Filament\Resources\Applicants\Tables;
 
 use Filament\Actions\BulkActionGroup;
@@ -20,6 +19,13 @@ class ApplicantsTable
                     ->searchable()
                     ->sortable()
                     ->label('Nama Pelamar'),
+                TextColumn::make('phone_whatsapp')
+                    ->searchable()
+                    ->label('No HP/WA'),
+                TextColumn::make('education_level')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Tamatan'),
                 TextColumn::make('position_applied')
                     ->searchable()
                     ->sortable()

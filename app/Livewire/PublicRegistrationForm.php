@@ -9,6 +9,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -64,6 +65,45 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
                             ->required()
                             ->maxLength(255)
                             ->label('Nama Lengkap'),
+                        TextInput::make('phone_whatsapp')
+                            ->tel()
+                            ->maxLength(30)
+                            ->label('No HP / WhatsApp Aktif (opsional)'),
+                        Select::make('education_level')
+                            ->label('Tamatan / Pendidikan Terakhir (opsional)')
+                            ->options([
+                                'SD' => 'SD',
+                                'SMP' => 'SMP / Sederajat',
+                                'SMA' => 'SMA / SMK / Sederajat',
+                                'D1' => 'D1',
+                                'D2' => 'D2',
+                                'D3' => 'D3',
+                                'D4' => 'D4',
+                                'S1' => 'S1',
+                                'S2' => 'S2',
+                                'S3' => 'S3',
+                            ])
+                            ->native(false),
+                        DatePicker::make('birth_date')
+                            ->maxDate(now())
+                            ->label('Tanggal Lahir (opsional)'),
+                        TextInput::make('height_cm')
+                            ->numeric()
+                            ->suffix('cm')
+                            ->minValue(0)
+                            ->maxValue(300)
+                            ->label('Tinggi Badan (opsional)'),
+                        TextInput::make('weight_kg')
+                            ->numeric()
+                            ->suffix('kg')
+                            ->minValue(0)
+                            ->maxValue(500)
+                            ->label('Berat Badan (opsional)'),
+                        Textarea::make('address')
+                            ->rows(2)
+                            ->maxLength(1000)
+                            ->columnSpanFull()
+                            ->label('Alamat Lengkap (opsional)'),
                         TextInput::make('position_applied')
                             ->required()
                             ->maxLength(255)
@@ -350,6 +390,10 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
             'data.position_applied' => ['required', 'string', 'max:255'],
             'data.expected_salary' => ['nullable', 'numeric', 'min:0', 'max:1000000000'],
             'data.estimated_living_cost' => ['nullable', 'numeric', 'min:0', 'max:1000000000'],
+            'data.height_cm' => ['nullable', 'numeric', 'min:0', 'max:300'],
+            'data.weight_kg' => ['nullable', 'numeric', 'min:0', 'max:500'],
+            'data.birth_date' => ['nullable', 'date', 'before:today'],
+            'data.phone_whatsapp' => ['nullable', 'string', 'max:30'],
         ]);
 
         $data = $this->data;
@@ -357,6 +401,12 @@ class PublicRegistrationForm extends Component implements HasActions, HasSchemas
         DB::transaction(function () use ($data) {
             $applicant = Applicant::create([
                 'full_name' => $data['full_name'],
+                'address' => $data['address'] ?? null,
+                'phone_whatsapp' => $data['phone_whatsapp'] ?? null,
+                'birth_date' => $data['birth_date'] ?? null,
+                'height_cm' => $data['height_cm'] ?? null,
+                'weight_kg' => $data['weight_kg'] ?? null,
+                'education_level' => $data['education_level'] ?? null,
                 'position_applied' => $data['position_applied'] ?? null,
                 'expected_salary' => $data['expected_salary'] ?? null,
                 'estimated_living_cost' => $data['estimated_living_cost'] ?? null,
