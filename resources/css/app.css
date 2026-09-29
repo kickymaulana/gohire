@@ -3,7 +3,137 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/*
+ * Filament v5 ikut ke Tailwind. Tombol aksi (fi-btn, fi-link-btn), field input
+ * (fi-input), section (fi-section) dan panel dropdown custom semuanya dirender
+ * dari view vendor ini, jadi seluruh direktori resources wajib ikut di-scan
+ * atau tampilannya akan polos / seperti teks biasa.
+ */
+@source '../../vendor/filament/**/*.blade.php';
+@source '../../vendor/filament/**/resources/views/**/*.blade.php';
+@source '../../vendor/filament/**/resources/css/**/*.css';
+@source '../../vendor/filament/**/resources/js/**/*.js';
+@source '../../vendor/filament/**/src/**/*.php';
+
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Fallback untuk memastikan field input selalu punya border yang jelas terlihat */
+@layer components {
+    .fi-input,
+    .fi-select-input,
+    textarea.fi-input {
+        border-width: 1px;
+        border-style: solid;
+        border-color: --alpha(var(--color-gray-300) / 100%);
+        background-color: var(--color-white);
+        border-radius: var(--radius-lg);
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.6rem center;
+        background-repeat: no-repeat;
+        background-size: 1.25em 1.25em;
+        padding-right: 2.25rem;
+    }
+
+    /* Dropdown native: opsi tidak boleh transparan */
+    .fi-select-input option {
+        background-color: var(--color-white);
+        color: var(--color-gray-900);
+    }
+
+    /* Dropdown custom Filament (Choices.js) - panel tidak boleh tembus/transparan */
+    [x-filament-select] {
+        background-color: var(--color-white);
+    }
+
+    [x-filament-select] ul,
+    [x-filament-select] li,
+    [x-filament-select] [role='listbox'],
+    [x-filament-select] [role='option'] {
+        background-color: var(--color-white);
+        color: var(--color-gray-900);
+    }
+
+    /* Dropdown custom Filament — panel & item tidak boleh transparan */
+    .fi-dropdown-list,
+    .fi-dropdown-panel {
+        background-color: var(--color-white);
+        border: 1px solid var(--color-gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .fi-dropdown-list-item {
+        background-color: var(--color-white);
+        color: var(--color-gray-700);
+    }
+
+    .fi-dropdown-list-item:hover,
+    .fi-dropdown-list-item.fi-selected {
+        background-color: var(--color-gray-100);
+        color: var(--color-gray-900);
+    }
+
+    /* Tombol "Tambah ..." pada repeater Filament.
+       Class .fi-btn bawaan Filament ditulis dengan @apply (sintaks Tailwind v3)
+       sehingga TIDAK ikut ter-generate oleh Tailwind v4. Dideklarasikan ulang
+       di sini dengan properti CSS biasa agar tombol benar-benar tampil sebagai
+       tombol, bukan sekadar teks yang bisa diklik. */
+    .fi-btn {
+        position: relative;
+        display: inline-grid;
+        grid-auto-flow: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        font-weight: 500;
+        transition-property: color, background-color, border-color, opacity, box-shadow;
+        transition-duration: 75ms;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .fi-btn:disabled {
+        cursor: default;
+        opacity: 0.7;
+    }
+
+    /* Varian utama (primary) */
+    .fi-btn.fi-color-primary {
+        border-color: transparent;
+        background-color: var(--color-primary-600, #d97706);
+        color: #ffffff;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .fi-btn.fi-color-primary:hover {
+        background-color: var(--color-primary-500, #f59e0b);
+    }
+
+    /* Varian outline (default tombol repeater) */
+    .fi-btn:not(.fi-color-primary) {
+        border-color: var(--color-gray-300);
+        background-color: var(--color-white);
+        color: var(--color-gray-700);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .fi-btn:not(.fi-color-primary):hover {
+        background-color: var(--color-gray-50);
+        border-color: var(--color-gray-400);
+    }
+
+    .fi-btn .fi-icon {
+        color: var(--color-gray-400);
+    }
 }
